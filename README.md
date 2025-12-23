@@ -5,7 +5,7 @@ Combine multiple images into one with customizable orientation, spacing, and ali
 ## Installation
 
 ```bash
-pip install -r requirements.txt
+pip install concat-images
 ```
 
 ## Python Usage
@@ -21,7 +21,7 @@ result.save('output.png')
 ## CLI Usage
 
 ```bash
-./concat_images.py output.png img1.png img2.png [img3.png ...]
+concat-images output.png img1.png img2.png [img3.png ...]
 ```
 
 ### Options
@@ -35,5 +35,5 @@ result.save('output.png')
 ### Example
 
 ```bash
-./concat_images.py result.png a.png b.png c.png -o horizontal -s 10 -a center
+concat-images result.png a.png b.png c.png -o horizontal -s 10 -a center
 ```
