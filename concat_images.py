@@ -6,11 +6,14 @@ Image concatenation script that combines multiple images into one.
 import argparse
 import sys
 from pathlib import Path
-from typing import List, Tuple
+from typing import List, Literal, Tuple
 from PIL import Image
 
+Orientation = Literal['vertical', 'horizontal']
+Alignment = Literal['begin', 'center', 'end']
 
-def parse_arguments():
+
+def parse_arguments() -> argparse.Namespace:
     """Parse command-line arguments."""
     parser = argparse.ArgumentParser(
         description='Concatenate multiple images into one.',
@@ -77,7 +80,7 @@ def load_images(image_paths: List[str]) -> List[Image.Image]:
 
 def calculate_canvas_size(
     images: List[Image.Image],
-    orientation: str,
+    orientation: Orientation,
     spacing: int
 ) -> Tuple[int, int]:
     """Calculate the size of the final canvas."""
@@ -96,8 +99,8 @@ def calculate_position(
     canvas_width: int,
     canvas_height: int,
     offset: int,
-    orientation: str,
-    alignment: str
+    orientation: Orientation,
+    alignment: Alignment
 ) -> Tuple[int, int]:
     """Calculate the position to paste an image on the canvas."""
     if orientation == 'vertical':
@@ -122,9 +125,9 @@ def calculate_position(
 
 def concatenate_images(
     images: List[Image.Image],
-    orientation: str,
+    orientation: Orientation,
     spacing: int,
-    alignment: str
+    alignment: Alignment
 ) -> Image.Image:
     """Concatenate images according to the specified parameters."""
     canvas_width, canvas_height = calculate_canvas_size(images, orientation, spacing)
@@ -147,7 +150,7 @@ def concatenate_images(
     return canvas
 
 
-def main():
+def main() -> None:
     """Main function."""
     args = parse_arguments()
 
