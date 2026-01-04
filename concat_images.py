@@ -11,6 +11,28 @@ from PIL import Image
 
 Orientation = Literal['vertical', 'horizontal']
 Alignment = Literal['begin', 'center', 'end']
+Color = Tuple[int, int, int, int]
+
+DEFAULT_BACKGROUND: Color = (255, 255, 255, 255)
+
+
+def parse_color(color_str: str) -> Color:
+    """Parse color string to RGBA tuple."""
+    if color_str == 'transparent':
+        return (0, 0, 0, 0)
+
+    try:
+        parts = [int(x.strip()) for x in color_str.split(',')]
+        if len(parts) == 3:
+            return (parts[0], parts[1], parts[2], 255)
+        elif len(parts) == 4:
+            return (parts[0], parts[1], parts[2], parts[3])
+        else:
+            raise ValueError("Color must have 3 (RGB) or 4 (RGBA) components")
+    except ValueError as e:
+        raise argparse.ArgumentTypeError(
+            f"Invalid color '{color_str}'. Use R,G,B or R,G,B,A format (e.g., 255,255,255 or 0,0,0,0) or 'transparent'"
+        ) from e
 
 
 def parse_arguments() -> argparse.Namespace:
@@ -50,6 +72,13 @@ def parse_arguments() -> argparse.Namespace:
         choices=['begin', 'center', 'end'],
         default='center',
         help='Alignment: begin (left/top), center, or end (right/bottom) (default: center)'
+    )
+
+    parser.add_argument(
+        '--background', '-b',
+        type=parse_color,
+        default=DEFAULT_BACKGROUND,
+        help="Background color as R,G,B or R,G,B,A (0-255, clamped) or 'transparent' (default: 255,255,255,255)"
     )
 
     args = parser.parse_args()
@@ -127,13 +156,13 @@ def concatenate_images(
     images: List[Image.Image],
     orientation: Orientation,
     spacing: int,
-    alignment: Alignment
+    alignment: Alignment,
+    background: Color = DEFAULT_BACKGROUND
 ) -> Image.Image:
     """Concatenate images according to the specified parameters."""
     canvas_width, canvas_height = calculate_canvas_size(images, orientation, spacing)
 
-    # Create canvas with white background
-    canvas = Image.new('RGBA', (canvas_width, canvas_height), (255, 255, 255, 255))
+    canvas = Image.new('RGBA', (canvas_width, canvas_height), background)
 
     offset = 0
     for img in images:
@@ -157,8 +186,8 @@ def main() -> None:
     print(f"Loading {len(args.images)} images...")
     images = load_images(args.images)
 
-    print(f"Concatenating images ({args.orientation}, spacing={args.space}, align={args.align})...")
-    result = concatenate_images(images, args.orientation, args.space, args.align)
+    print(f"Concatenating images ({args.orientation}, spacing={args.space}, align={args.align}, bg={args.background})...")
+    result = concatenate_images(images, args.orientation, args.space, args.align, args.background)
 
     # Convert back to RGB for saving (if output format doesn't support alpha)
     output_path = Path(args.output)

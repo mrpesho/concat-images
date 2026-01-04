@@ -43,6 +43,12 @@ env/
 .pydevproject
 .settings/
 
+# Testing
+.pytest_cache/
+
+# Lockfiles
+uv.lock
+
 # Claude Code
 .claude/
 .mcp.json
