@@ -41,3 +41,6 @@ Issues = "https://github.com/mrpesho/concat-images/issues"
 
 [project.scripts]
 concat-images = "concat_images:main"
+
+[tool.setuptools]
+py-modules = ["concat_images"]
